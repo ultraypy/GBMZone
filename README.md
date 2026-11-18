@@ -4,6 +4,35 @@ GBMZone predicts glioblastoma tissue regions from spatial transcriptomics and re
 
 The repository contains the model, input loaders, training and inference code. Supply processed spatial inputs and the model reference or checkpoint separately.
 
+## Model workflow
+
+![GBMZone workflow from spatial RNA and registered H&E to per-spot region probabilities](docs/gbmzone-workflow.svg)
+
+Both the expression and pathway branches start from the same 1,850 coding genes. The model learns separate weights for genes within each pathway and separate gates for the GO, KEGG and image inputs. Each graph layer combines a spot's own features with the mean of its within-tissue neighbors.
+
+## Figure 4 · Pathology-region prediction in GBMspace
+
+The benchmark covers 38 GBMspace sections from six patients. GBMZone used each patient's held-out checkpoint for all of that patient's sections. The registered H&E image and pathology annotations are from de Jong et al. [GBMspace study](https://doi.org/10.1038/s41586-026-11234-8) · [Visium dataset E-MTAB-17164](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-17164)
+
+![Figure 4 showing matched tissue maps, partition agreement and patient-level classification scores for six methods](results/figure4/Figure4.png)
+
+**A.** Pathology labels and all six methods are shown at the same 9,331 labeled spots in section `AT15-BRA-4-FO-G1-S21`. [Full-resolution Figure 4 (PDF)](results/figure4/Figure4.pdf)
+
+**B.** The circular plot shows patient means and sample standard deviations for adjusted Rand index (ARI), adjusted mutual information (AMI) and normalized mutual information (NMI). The 25 sections with at least two pathology classes represent four patients. Section scores were averaged within each sampling site, then across sites within each patient.
+
+**C and D.** The boxplots show the median and interquartile range of held-out macro F1 for six patients and macro AUROC for five. The table gives the patient means for all five metrics.
+
+| Method | ARI | AMI | NMI | Macro F1 | Macro AUROC |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| BANKSY | 0.286 | 0.275 | 0.276 | 0.574 | 0.872 |
+| GraphST | 0.293 | 0.340 | 0.341 | 0.550 | 0.888 |
+| SpaGCN | 0.249 | 0.314 | 0.315 | 0.560 | 0.881 |
+| Seurat | 0.294 | 0.286 | 0.288 | 0.682 | 0.868 |
+| DIRAC | 0.461 | 0.430 | 0.431 | 0.645 | 0.872 |
+| **GBMZone** | **0.564** | **0.487** | **0.488** | **0.783** | **0.940** |
+
+BANKSY, GraphST and SpaGCN use their native spatial domains for partition agreement. For the class maps and classification scores, each domain takes the class with the largest average Seurat score from the fold-specific reference. The CSVs include the AT15 spot predictions, section agreement scores, and patient and class metrics. In the spot table, pathology class codes `0`, `1` and `2` denote CT, LE/IT and necrosis-associated tissue, respectively. [Figure 4 source data](results/figure4/source-data/)
+
 ## Installation
 
 Use Python 3.10 and run commands from the repository root.
@@ -58,5 +87,3 @@ python algorithm/train.py \
 Choose `tran` (RNA), `pathway_tran` (RNA and pathways), `he_tran` (RNA and H&E), or `pathway_he_tran` (all inputs). Training initializes the graph model from scratch and fits scaling on the training patients. It reports held-out patient metrics after fitting. Each output bundle contains one fold at index `0`.
 
 The `--reference` input supplies class order, gene order, pathways, and the optional frozen image encoder. An existing full-model bundle provides these definitions. To construct a reference for new inputs, save a dictionary with `torch.save` containing `classes`, `gene_order` (with an ordered `stable_id` list), `pathways` (pathway metadata), and `folds` (a list with a dictionary containing `mask` and `groups` at index `0`). Use a gene-by-pathway Boolean `mask` with at least one gene per pathway. Give `groups` one entry per pathway with `GO_BP` or `KEGG`. For H&E models, also provide `image_encoder_state` (ImageNet ResNet18 state dictionary) and `image_encoder` (encoder metadata).
-
-The study evaluated six patient-held-out folds across 38 public GBMspace sections. To evaluate a particular patient's published-cohort sections, use that patient's held-out checkpoint fold for all of their sections.

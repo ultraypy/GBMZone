@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="416" viewBox="0 0 1160 416" role="img" aria-labelledby="title description">
+  <title id="title">GBMZone model workflow</title>
+  <desc id="description">Spatial RNA supplies expression features and GO and KEGG pathway scores. Registered H&amp;E crops supply frozen ResNet18 features. Two GraphSAGE layers aggregate each spot and its within-tissue neighbors. Separate gates weight the GO, KEGG and image branches in the first layer. Softmax returns probabilities for cellular tumor, leading edge or infiltrating tumor, and necrosis-associated tissue at each spot. The region map shown is schematic.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #19283a; }
+      .heading { font-size: 23px; font-weight: 700; }
+      .label { font-size: 19px; font-weight: 700; }
+      .body { font-size: 16px; }
+      .caption { font-size: 15px; }
+      .flow { fill: none; stroke: #405366; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#405366"/>
+    </marker>
+    <clipPath id="he-crop"><rect width="77" height="57" rx="3"/></clipPath>
+    <pattern id="nuclei" width="27" height="21" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
+      <ellipse cx="5" cy="7" rx="2.8" ry="1.7" fill="#86598e"/>
+      <ellipse cx="20" cy="14" rx="1.9" ry="3" fill="#a06f9c" transform="rotate(25 20 14)"/>
+      <ellipse cx="13" cy="1" rx="1.3" ry="1.8" fill="#9a6494"/>
+    </pattern>
+    <clipPath id="tissue-shape">
+      <path d="M12 67 Q16 44 34 39 Q43 20 67 24 Q85 8 111 13 Q125 15 138 22 Q156 18 170 29 Q194 33 201 55 Q193 72 179 81 Q170 99 153 95 Q136 109 110 101 Q92 116 70 105 Q51 109 41 93 Q21 94 12 67 Z"/>
+    </clipPath>
+    <pattern id="spot-dots" width="12" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="5" r="2.95" fill="white"/>
+      <circle cx="9" cy="15" r="2.95" fill="white"/>
+    </pattern>
+    <mask id="spot-mask" x="0" y="0" width="213" height="120" maskUnits="userSpaceOnUse">
+      <rect width="213" height="120" fill="url(#spot-dots)"/>
+    </mask>
+  </defs>
+  <rect width="1160" height="416" rx="8" fill="white"/>
+
+  <g id="headings">
+    <text class="heading" x="27" y="40">Spatial inputs</text>
+    <text class="heading" x="288" y="40">Feature branches</text>
+    <text class="heading" x="592" y="40">Within-tissue graph</text>
+    <text class="heading" x="916" y="40">Region prediction</text>
+    <path d="M28 54 H236 M288 54 H540 M592 54 H855 M916 54 H1132" fill="none" stroke="#c6d0d8" stroke-width="1.4"/>
+  </g>
+
+  <g id="rna-input">
+    <text class="label" x="28" y="97">Spatial RNA</text>
+    <g transform="translate(28 113)" stroke="white" stroke-width="1.3">
+      <rect width="77" height="55" fill="#dbe9ef"/>
+      <path d="M0 0h11v11H0z M22 0h11v11H22z M33 11h11v11H33z M55 22h11v11H55z M11 33h11v11H11z M44 44h11v11H44z" fill="#467b9a"/>
+      <path d="M11 0h11v11H11z M44 0h11v11H44z M0 11h11v11H0z M22 11h11v11H22z M66 11h11v11H66z M33 22h11v11H33z M22 33h11v11H22z M55 44h11v11H55z" fill="#86b4c8"/>
+      <path d="M55 0h11v11H55z M11 11h11v11H11z M44 22h11v11H44z M0 33h11v11H0z M55 33h11v11H55z M22 44h11v11H22z" fill="#285b79"/>
+      <path d="M11 0v55m11-55v55m11-55v55m11-55v55m11-55v55m11-55v55 M0 11h77M0 22h77M0 33h77M0 44h77" fill="none"/>
+    </g>
+    <text class="body" x="117" y="135">1,850 coding</text>
+    <text class="body" x="117" y="157">genes per spot</text>
+  </g>
+  <g id="histology-input">
+    <text class="label" x="28" y="300">Registered H&amp;E</text>
+    <g transform="translate(28 314)" clip-path="url(#he-crop)">
+      <rect width="77" height="57" fill="#f2d6e1"/>
+      <path d="M-5 26 Q20 1 39 11 T84 -1 M-9 56 Q25 29 43 35 T88 18" fill="none" stroke="#cf9cbb" stroke-width="13"/>
+      <path d="M-5 21 Q21 0 38 9 T86 -6 M-3 51 Q25 28 44 32 T84 20" fill="none" stroke="#f8e6ec" stroke-width="4"/>
+      <rect width="77" height="57" fill="url(#nuclei)"/>
+    </g>
+    <rect x="28" y="314" width="77" height="57" rx="3" fill="none" stroke="#a67995"/>
+    <text class="body" x="117" y="336">220 µm</text>
+    <text class="body" x="117" y="357">square crop</text>
+  </g>
+
+  <g id="input-routing">
+    <path class="flow" d="M236 140 H260 V121 H280"/>
+    <path class="flow" d="M260 140 V229 H280"/>
+    <circle cx="260" cy="140" r="3.3" fill="#405366"/>
+    <path class="flow" d="M236 342 H280"/>
+  </g>
+
+  <g id="feature-branches">
+    <rect x="288" y="83" width="252" height="74" rx="8" fill="#eaf2f7"/>
+    <path d="M289 94v52" stroke="#477998" stroke-width="4" stroke-linecap="round"/>
+    <text class="label" x="305" y="112">RNA expression</text>
+    <text class="body" x="305" y="138">Scaled gene features</text>
+
+    <rect x="288" y="181" width="252" height="97" rx="8" fill="#eaf4ef"/>
+    <path d="M289 193v73" stroke="#458371" stroke-width="4" stroke-linecap="round"/>
+    <text class="label" x="305" y="210">Pathway pooling</text>
+    <text class="body" x="305" y="235">439 GO BP and 133 KEGG sets</text>
+    <text class="body" x="305" y="257">Learned weights within each set</text>
+
+    <rect x="288" y="300" width="252" height="83" rx="8" fill="#f4edf5"/>
+    <path d="M289 312v59" stroke="#956f96" stroke-width="4" stroke-linecap="round"/>
+    <text class="label" x="305" y="330">Frozen ResNet18</text>
+    <text class="body" x="305" y="355">224 × 224 px → 512 features</text>
+  </g>
+  <g id="graph-inputs">
+    <path class="flow" d="M542 121 H582"/>
+    <path class="flow" d="M542 229 H582"/>
+    <path class="flow" d="M542 342 H582"/>
+  </g>
+
+  <g id="spatial-encoder">
+    <rect x="592" y="77" width="263" height="306" rx="10" fill="#f5f8fa" stroke="#b6c5d0" stroke-width="1.6"/>
+    <text class="label" x="611" y="107">Two-layer GraphSAGE</text>
+    <g transform="translate(612 125)" stroke-linejoin="round">
+      <path d="M2 41 Q2 15 24 7 Q44 -2 62 6 Q79 15 88 34 Q89 53 74 65 Q55 80 35 72 Q12 73 2 48 Z" fill="#e0e9eb" stroke="#adbdc3"/>
+      <g fill="none" stroke="#97adb7" stroke-width="1.4">
+        <path d="M12 42 L25 17 L51 13 L74 26 L71 52 L47 65 L22 59 L12 42 M25 17 L51 13 M12 42 L44 38 L47 65 M44 38 L22 59 M44 38 L25 17 M44 38 L51 13 M44 38 L74 26 M44 38 L71 52"/>
+      </g>
+      <g fill="white" stroke="#567887" stroke-width="1.6">
+        <circle cx="12" cy="42" r="3.6"/><circle cx="25" cy="17" r="3.6"/><circle cx="51" cy="13" r="3.6"/><circle cx="74" cy="26" r="3.6"/><circle cx="71" cy="52" r="3.6"/><circle cx="47" cy="65" r="3.6"/><circle cx="22" cy="59" r="3.6"/>
+      </g>
+      <circle cx="44" cy="38" r="6.5" fill="#244b60" stroke="white" stroke-width="1.8"/>
+    </g>
+    <text class="body" x="712" y="152">Spot features +</text>
+    <text class="body" x="712" y="175">neighbor average</text>
+    <path d="M612 213 H834" fill="none" stroke="#c4cfd6"/>
+    <text class="label" x="612" y="241">Gated fusion</text>
+    <text class="body" x="612" y="265">Add RNA and gated GO,</text>
+    <text class="body" x="612" y="287">KEGG and H&amp;E projections</text>
+    <path d="M612 301 H834" fill="none" stroke="#c4cfd6"/>
+    <text class="label" x="612" y="330">Second graph layer</text>
+    <text class="body" x="612" y="355">24 hidden features per spot</text>
+  </g>
+
+  <path class="flow" d="M856 184 H905"/>
+  <g id="region-output">
+    <text class="label" x="917" y="96">Linear head + softmax</text>
+    <g transform="translate(917 113)">
+      <rect width="213" height="120" rx="6" fill="#0d1521"/>
+      <g clip-path="url(#tissue-shape)" mask="url(#spot-mask)">
+        <rect width="213" height="120" fill="#50a8e3"/>
+        <path d="M0 0 H214 V84 Q187 93 156 68 Q122 43 103 60 Q72 78 49 48 Q36 34 0 49 Z" fill="#8ed3a5"/>
+        <path d="M3 74 Q23 58 45 79 T104 122 H0 Z" fill="#f3aa66"/>
+      </g>
+    </g>
+    <text class="caption" x="918" y="255">Illustrative class map</text>
+    <circle cx="925" cy="281" r="6" fill="#50a8e3" stroke="#427c9f"/>
+    <text class="body" x="941" y="287">Cellular tumor (CT)</text>
+    <circle cx="925" cy="312" r="6" fill="#8ed3a5" stroke="#568675"/>
+    <text class="body" x="941" y="317">Leading edge /</text>
+    <text class="body" x="941" y="338">infiltrating tumor (LE/IT)</text>
+    <circle cx="925" cy="366" r="6" fill="#f3aa66" stroke="#af7950"/>
+    <text class="body" x="941" y="371">Necrosis-associated tissue</text>
+  </g>
+</svg>
