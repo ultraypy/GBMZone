@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.DS_Store
+.env
+.env.*
+
+# Local research inputs and outputs
+/inputs/
+/data/
+/checkpoints/
+/outputs/
+*.pt
+*.pth
+*.npz
+*.h5ad
+*.gef
+*.fastq*
+*.fq*
