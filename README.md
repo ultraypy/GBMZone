@@ -4,6 +4,15 @@ GBMZone predicts glioblastoma tissue regions from spatial transcriptomics and re
 
 The repository contains the model, input loaders, training and inference code. Supply processed spatial inputs and the model reference or checkpoint separately.
 
+## Reproduce the manuscript analyses
+
+The [analysis guide](analysis/README.md) indexes the code for Figures 1–6, the inputs from Data S1 and OMIX, and the commands for the patient-level comparisons. Figure 4 runs with the public CSVs already in this repository.
+
+```bash
+python -m pip install -r analysis/requirements.txt
+python analysis/reproduce.py --figures 4 --plot --out outputs/figure4
+```
+
 ## Model workflow
 
 ![GBMZone workflow from spatial RNA and registered H&E to per-spot region probabilities](docs/gbmzone-workflow.svg)
