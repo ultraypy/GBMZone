@@ -6,11 +6,11 @@ The repository contains the model, input loaders, training and inference code. S
 
 ## Reproduce the manuscript analyses
 
-The [analysis guide](analysis/README.md) indexes the code for Figures 1–6, the inputs from Data S1 and OMIX, and the commands for the patient-level comparisons. The Figure 4 benchmark and Figure S26 ablation run with the public CSVs in this repository.
+The [analysis guide](analysis/README.md) indexes the code for Figures 1–6, the inputs from Data S1 and OMIX, and the commands for the patient-level comparisons. The Figure 4 benchmark runs with the public CSVs in this repository.
 
 ```bash
 python -m pip install -r analysis/requirements.txt
-python analysis/reproduce.py --figures 4 S26 --plot --out outputs/benchmark
+python analysis/reproduce.py --figures 4 --plot --out outputs/benchmark
 ```
 
 ## Model workflow
@@ -43,14 +43,6 @@ The benchmark compares eight methods across 38 GBMspace sections from six patien
 | **GBMZone** | **0.539** | **0.458** | **0.458** | **0.751** | **0.936** |
 
 BANKSY, GraphST, SpaGCN, and stClinic use their native spatial domains for partition agreement. For the class maps and classification scores, each domain takes the class with the largest average Seurat score from the fold-specific reference. Seurat also serves as a standalone comparator alongside DIRAC and STELLAR. The CSVs include the evaluation sections, the AT15 spot predictions, section agreement scores, and patient and class metrics. In the spot table, prediction codes `0`, `1`, and `2` denote CT, LE/IT, and necrosis-associated tissue, respectively. [Figure 4 source data](results/figure4/source-data/)
-
-## Figure S26 · Performance by GBMZone input configuration
-
-The six input configurations were evaluated on a shared subset of 19 of the 38 benchmark sections. RNA and GO/KEGG pathways gave the highest mean ARI (0.567), AMI (0.481), NMI (0.482), macro F1 (0.775), and macro AUROC (0.947) and the lowest multiclass Brier score (0.282) among these six configurations.
-
-![Figure S26 comparing partition agreement across six GBMZone input configurations](results/figureS26/FigureS26.png)
-
-[Figure S26 (PDF)](results/figureS26/FigureS26.pdf) · [Six-configuration summary](results/figureS26/source-data/configuration_cohort_metrics.csv) · [Patient-level scores](results/figureS26/source-data/configuration_patient_metrics.csv)
 
 ## Installation
 
