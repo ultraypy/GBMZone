@@ -1,6 +1,6 @@
 # GBMspace pathology benchmark
 
-Figure 4 compares eight methods on 38 sections from six patients in the GBMspace Visium dataset. The six GBMZone input configurations in Figure S26 share a subset of 19 of these sections. From the repository root, run `python analysis/reproduce.py --figures 4 S26 --plot --out outputs/benchmark` to regenerate the numerical summaries. [GBMspace Visium dataset](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-17164)
+Figure 4 compares eight methods on 38 sections from six patients in the GBMspace Visium dataset. Figure S26 compares six GBMZone input configurations on those same 38 sections and pathology scoring positions. From the repository root, run `python analysis/reproduce.py --figures 4 S26 --plot --out outputs/benchmark` to regenerate the numerical summaries. [GBMspace Visium dataset](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-17164)
 
 ## Comparator settings
 

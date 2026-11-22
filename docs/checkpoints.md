@@ -2,16 +2,16 @@
 
 ## Checkpoints for Figures 4 and S26
 
-Figure 4 uses the RNA-plus-pathway checkpoint listed as group 3. Figure S26 compares six configurations on a shared subset of 19 benchmark sections. The fold order is AT10, AT13, AT15, AT3, AT4 and AT6, with one held-out patient per fold.
+Figure S26 compares six input configurations on the same 38 GBMspace sections and pathology scoring positions as Figure 4. The fold order is AT10, AT13, AT15, AT3, AT4 and AT6, with one held-out patient per fold.
 
 | Group | Configuration | File | SHA-256 |
 | --- | --- | --- | --- |
-| 1 | RNA, pathways and H&E | `pathway+he+tran_1of3.pt` | `fb4afcad3ac4936d038e87325dc661e4d529f1cbe56970edab2b5da68e03fdfd` |
-| 2 | RNA and H&E | `he+tran_1of4.pt` | `beb2013a111d7b7f32ec60eb78bb8b8755caa44d0891d29b86d13df9ea8bfc88` |
+| 1 | RNA, pathways and H&E | `pathway+he+tran.pt` | `36613b267e35699bdbd5a3c96ce07c91495293a39fc6378a0874934d9f602a77` |
+| 2 | RNA and H&E | `he+tran.pt` | `bbd8043d5a2d031059970d0a26a129d9698ab46b805e5ec588f92c81140f5092` |
 | 3 | RNA and pathways | `pathway+tran_2of3.pt` | `f8b3a35245d9d74953c8f27a5a3c7c62f877bcb5b36b076c686b6e54e4d79633` |
-| 4 | RNA | `tran_1of3.pt` | `2f557e85ffca8650af3e192487472589b9c16e280c202ec7ea80bd4dc7095195` |
-| 5 | H&E | `he.pt` | `3f70fd7cd9ce7721e5f476b4307fa6df351e870165c32010339a7a17b291c86a` |
-| 6 | Pathways and H&E | `pathway+he_1of4.pt` | `8eeecdf57682e7a908f550b95ff8c1af099c36e3456e67f51b318cf4cb7478df` |
+| 4 | RNA | `tran.pt` | `e1bfffe8406c10d6b7bc7aefa4ec619d29e90c208f0fc2c0bd693576919960e9` |
+| 5 | H&E | `he.pt` | `25610ef6703e14f80bd7265d8a1892bae1fea8ec259ab3fcf066d191d74e8fa9` |
+| 6 | Pathways and H&E | `pathway+he.pt` | `a7bdbccd1c8430c2e6d79b6bf01410a77d94031d6356ffbac7728ee11680bd60` |
 
 ## Original checkpoints
 
