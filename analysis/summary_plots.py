@@ -31,10 +31,15 @@ def plot(number, results, read, out):
             ax.scatter(table.mean_delta_I, table.program, marker=marker, label=cohort)
         ax.set_xlabel("Mean patient ΔI (platform-specific neighborhood)")
         ax.legend(frameon=False)
-    elif number == "4":
-        table = results["fig4_classification"].sort_values("macro_f1_mean")
-        ax.scatter(table.macro_f1_mean, table.method, label="Macro F1")
-        ax.scatter(table.macro_auroc_mean, table.method, marker="s", label="Macro AUROC")
+    elif number in {"4", "S26"}:
+        if number == "4":
+            table = results["fig4_classification"].sort_values("macro_f1_mean")
+            labels, f1, auc = table.method, table.macro_f1_mean, table.macro_auroc_mean
+        else:
+            table = results["figS26_configuration_means"].sort_values("macro_f1")
+            labels, f1, auc = table.modality, table.macro_f1, table.macro_auroc
+        ax.scatter(f1, labels, label="Macro F1")
+        ax.scatter(auc, labels, marker="s", label="Macro AUROC")
         ax.set_xlim(0, 1)
         ax.set_xlabel("Mean across evaluable patients")
         ax.legend(frameon=False)
@@ -53,7 +58,7 @@ def plot(number, results, read, out):
             ax.set_yticks(np.arange(len(d)), d.gene)
         ax.set_xlabel("Within-lineage difference (edge minus core, log2 scale, 95% CI)")
         ax.legend(frameon=False)
-    if number != "4":
+    if number not in {"4", "S26"}:
         ax.axvline(0, linewidth=.8, color="#777", zorder=0)
     fig.savefig(out / f"figure{number}_summary.pdf")
     plt.close(fig)

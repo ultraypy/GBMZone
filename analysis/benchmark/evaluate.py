@@ -49,7 +49,7 @@ def main():
         raise ValueError("hard must be Boolean")
     if not (tab.patient == tab.held_out_patient).all():
         raise ValueError("Predicted section does not match the held-out donor")
-    if args.method in {"BANKSY", "SpaGCN", "GraphST"}:
+    if args.method in {"BANKSY", "SpaGCN", "GraphST", "stClinic"}:
         seurat = ["seurat_" + k for k in CLASSES]
         tab[CLASSES] = tab.groupby(["sample", "domain"])[seurat].transform("mean").to_numpy()
     else:

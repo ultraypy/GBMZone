@@ -1,14 +1,14 @@
 # Manuscript analysis workflows
 
-This directory accompanies *Single-cell profiling and GBMZone-guided spatial mapping of human gliomas from three cerebral lobes*. It includes the patient-level analyses of all six main results and the code for the spatial and reference-based models.
+This directory accompanies *A single-cell atlas of human glioblastoma and GBMZone-guided spatial maps from three cerebral lobes*. It includes the patient-level analyses of the six main results and the GBMZone input comparison.
 
 ## Start with the published figure data
 
-From a checkout of the repository, use Python 3.10 or 3.11 and install the summary-analysis dependencies. Figure 4 can be run immediately using the six CSV files distributed with the repository.
+From a checkout of the repository, use Python 3.10 or 3.11 and install the summary-analysis dependencies. The Figure 4 benchmark and Figure S26 input comparison can run directly from the CSVs distributed with the repository.
 
 ```bash
 python -m pip install -r analysis/requirements.txt
-python analysis/reproduce.py --figures 4 --plot --out outputs/figure4
+python analysis/reproduce.py --figures 4 S26 --plot --out outputs/benchmark
 ```
 
 For all six figures, use the manuscript supplement named **Data S1.zip**. The script opens CSV files directly from the archive. The output contains recalculated results and six summary PDFs. The journal artwork, including the atlas layout and registered tissue views, is in the manuscript figure files.
@@ -22,9 +22,10 @@ python analysis/reproduce.py --data "Data S1.zip" --plot --out outputs/paper
 | 1 | Paired T and NT single-cell composition by donor | The 11 captured cell identities and four within-malignant proportions are tested together using paired CLR differences, exact sign flips and BH adjustment over 15 tests. |
 | 2 | Donor-by-state metabolic RNA scores and IvyGAP donor-by-region program scores | The script recalculates all 77 × 6 state contrasts, retaining untested slots in each correction family, and tests eight programs across paired anatomical specimens. Internal and external scoring scales are retained. |
 | 3 | Observed and conditional-null spatial autocorrelation per internal section and external patient effects | Internal ΔI is observed Moran's I minus its conditional null mean. Exact patient sign tests use BH across 16 internal comparisons and BY across eight external programs. |
-| 4 | Per-section domain agreement and per-patient classification scores from GBMspace | ARI, AMI and NMI are averaged first within a site and then across sites per patient. Macro F1 and macro AUROC are averaged across evaluable patients for each method. |
+| 4 | Per-section domain agreement and per-patient classification scores for eight methods on 38 GBMspace sections | ARI, AMI and NMI are averaged first within a site and then across sites per patient. Macro F1 and macro AUROC are averaged across evaluable patients for each method. |
 | 5 | Four complete regional gene contrasts, IvyGAP gene results and patient-specific program effects | Stable Ensembl IDs link the RNA-plus-pathway and RNA region calls at bin100 and cellbin. The code counts genes with directionally consistent FDR support and re-tests regional programs in each cohort. |
 | 6 | Counts and library sizes for each patient, region and lineage, together with lineage-level decomposition terms | Seven gene–lineage comparisons are repeated using paired log2 differences. The code applies the original coverage rules, calculates paired t and sensitivity tests, and sums the lineage contributions to each tissue-level difference. |
+| S26 | Per-patient scores for six GBMZone input configurations evaluated on a shared subset of 19 GBMspace sections | Macro F1, macro AUROC, soft Brier score, ARI, AMI and NMI are averaged across evaluable patients for each configuration. |
 
 Every numerical figure workflow checks its results against the corresponding reference columns in Data S1. Statistics use the patient as the independent observation. A class with no evaluable AUROC and a gene–lineage pair below coverage retain a missing result. The four internal region configurations use the same underlying tissue.
 
@@ -46,7 +47,7 @@ python analysis/programs/tissue_graph.py --nodes bin100_scores.csv --mask regist
 python analysis/programs/spatial.py --nodes outputs/graph/nodes.csv.gz --graph outputs/graph/adjacency.npz --seed 2026111401 --out outputs/spatial.csv
 ```
 
-**Pathology benchmark.** The six held-out patients and the matched pathology maps accompany [Figure 4](../results/figure4/). Commands for the five published comparators and their input contracts are in the [benchmark guide](benchmark/README.md). Trained model configurations are identified by their [checkpoint hashes](../docs/checkpoints.md).
+**Pathology benchmark.** The six-patient comparison and the matched pathology maps accompany [Figure 4](../results/figure4/). The [benchmark guide](benchmark/README.md) gives the comparator settings, commands for the bundled workflows and the scoring input contract. The six input configurations and their patient-level metrics accompany [Figure S26](../results/figureS26/). Trained model configurations are identified by their [checkpoint hashes](../docs/checkpoints.md).
 
 **Regional gene expression.** Use a separate environment with `analysis/regions/requirements-de.txt` for a count-model refit. Start with six fold predictions for the same nodes from [the GBMZone predictor](../algorithm/predict.py). Bins are retained at mean class probability ≥0.60 with ≥4 matching folds. Regional islands require 20 bins, with ≥100 bins of each class in a retained native component. Region eligibility additionally requires 10,000 coding UMIs and five qualified 500 µm blocks. Each command below operates on a single donor until the joint model fit.
 

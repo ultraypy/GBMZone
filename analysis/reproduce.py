@@ -1,4 +1,4 @@
-"""Recompute the patient-level results in Figures 1–6 from Data S1."""
+"""Recompute the patient-level results in Figures 1–6 and S26 from Data S1."""
 import argparse
 from contextlib import nullcontext
 from functools import lru_cache
@@ -148,6 +148,17 @@ def benchmark(read):
     return {"fig4_partition": partition, "fig4_classification": performance}
 
 
+def ablation(read):
+    patients = read("Tables/S6/configuration_patient_metrics")
+    keys = ["group", "modality"]
+    metrics = ["macro_f1", "macro_auroc", "soft_brier", "ari", "ami", "nmi"]
+    if patients.duplicated(keys + ["patient"]).any():
+        raise ValueError("Duplicate patient within a GBMZone configuration")
+    means = patients.groupby(keys, as_index=False)[metrics].mean()
+    checked(means, read("Tables/S6/configuration_cohort_metrics"), keys, metrics)
+    return {"figS26_configuration_means": means}
+
+
 def regional_genes(read):
     directory = "Tables/S7/"
     methods = ["rna_pathway_bin100", "rna_pathway_cellbin", "rna_bin100", "rna_cellbin"]
@@ -229,26 +240,30 @@ def lineage(read):
 
 
 def main():
+    runners = dict(zip("123456", [composition, metabolism, spatial, benchmark, regional_genes, lineage],
+                       strict=True))
+    runners["S26"] = ablation
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data", type=Path, help="The manuscript supplementary archive Data S1.zip; optional for Figure 4")
+    parser.add_argument("--data", type=Path,
+                        help="The manuscript supplementary archive Data S1.zip; optional for Figures 4 and S26")
     parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--figures", nargs="+", choices=list("123456"), default=list("123456"))
+    parser.add_argument("--figures", nargs="+", choices=list(runners), default=list("123456"))
     parser.add_argument("--plot", action="store_true", help="Also render a summary of each result as a PDF")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
-    if args.data is None and set(args.figures) != {"4"}:
+    if args.data is None and not set(args.figures) <= {"4", "S26"}:
         parser.error("--data is required for Figures 1–3 and 5–6")
     source = ZipFile(args.data) if args.data else nullcontext(None)
     with source as archive:
         def read(member):
             if archive is None:
-                root = Path(__file__).resolve().parents[1] / "results/figure4/source-data"
+                figure = "figureS26" if member.startswith("Tables/S6/") else "figure4"
+                root = Path(__file__).resolve().parents[1] / "results" / figure / "source-data"
                 return pd.read_csv(root / (member.split("/")[-1] + ".csv"))
             with archive.open(member + ".csv") as stream:
                 return pd.read_csv(stream)
         for number in dict.fromkeys(args.figures):
-            runner = [composition, metabolism, spatial, benchmark, regional_genes, lineage][int(number) - 1]
-            results = runner(read)
+            results = runners[number](read)
             for name, frame in results.items():
                 frame.to_csv(args.out / (name + ".csv"), index=False)
             if args.plot:
