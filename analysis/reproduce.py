@@ -264,11 +264,17 @@ def main():
                 return pd.read_csv(stream)
         for number in dict.fromkeys(args.figures):
             results = runners[number](read)
+            if number == "1" and "Figure 1/Figure1C_patient_marker_means.csv" in archive.namelist():
+                from figure1_markers import summarize
+                results.update(summarize(read))
             for name, frame in results.items():
                 frame.to_csv(args.out / (name + ".csv"), index=False)
             if args.plot:
                 from summary_plots import plot
                 plot(number, results, read, args.out)
+                if "fig1c_markers" in results:
+                    from figure1_markers import plot_panel
+                    plot_panel(results, args.out)
             print(f"Figure {number} complete", flush=True)
 
 

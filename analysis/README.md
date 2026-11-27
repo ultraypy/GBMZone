@@ -11,7 +11,7 @@ python -m pip install -r analysis/requirements.txt
 python analysis/reproduce.py --figures 4 S26 --plot --out outputs/benchmark
 ```
 
-For all six figures, use the manuscript supplement named **Data S1.zip**. The script opens CSV files directly from the archive. The output contains recalculated results and six summary PDFs. The journal artwork, including the atlas layout and registered tissue views, is in the manuscript figure files.
+For all six figures, use the manuscript supplement named **Data S1.zip**. The script opens CSV files directly from the archive. The output contains recalculated results, a summary PDF for each main figure, and the Figure 1C marker panel. The journal artwork, including the atlas layout and registered tissue views, is in the manuscript figure files.
 
 ```bash
 python analysis/reproduce.py --data "Data S1.zip" --plot --out outputs/paper
@@ -19,7 +19,7 @@ python analysis/reproduce.py --data "Data S1.zip" --plot --out outputs/paper
 
 | Figure | Starting observations | Recalculation |
 | --- | --- | --- |
-| 1 | Paired T and NT single-cell composition by donor | The 11 captured cell identities and four within-malignant proportions are tested together using paired CLR differences, exact sign flips and BH adjustment over 15 tests. |
+| 1 | Marker expression by patient and cell identity, sampling counts, and paired T and NT composition | Figure 1C summarizes 23 markers across four candidate malignant states and seven microenvironmental cell types. Figure 1D uses paired CLR differences, exact sign flips and BH adjustment across 15 composition tests. |
 | 2 | Donor-by-state metabolic RNA scores and IvyGAP donor-by-region program scores | The script recalculates all 77 × 6 state contrasts, retaining untested slots in each correction family, and tests eight programs across paired anatomical specimens. Internal and external scoring scales are retained. |
 | 3 | Observed and conditional-null spatial autocorrelation per internal section and external patient effects | Internal ΔI is observed Moran's I minus its conditional null mean. Exact patient sign tests use BH across 16 internal comparisons and BY across eight external programs. |
 | 4 | Per-section domain agreement and per-patient classification scores for eight methods on 38 GBMspace sections | ARI, AMI and NMI are averaged first within a site and then across sites per patient. Macro F1 and macro AUROC are averaged across evaluable patients for each method. |
@@ -32,6 +32,8 @@ Every numerical figure workflow checks its results against the corresponding ref
 ## Working from processed matrices
 
 The in-house single-cell and Stereo-seq coding-count matrices are deposited under [OMIX023673](https://ngdc.cncb.ac.cn/omix/release/OMIX023673). OMIX supplies expression counts and spatial coordinates. The tissue graphs, registered masks, per-cell atlas assignments, discovery-cell membership, GBMZone fold predictions and the annotated single-cell training reference are separate intermediate inputs for the optional workflows below. The statistical reproduction from Data S1 can run independently of those intermediates. The main internal spatial workflow uses RNA and pathway features.
+
+**Figure 1C.** Run `python analysis/reproduce.py --data "Data S1.zip" --figures 1 --plot --out outputs/atlas_summary`. The program averages the patient-level expression means and detection fractions for each identity, retaining patients with at least 20 cells after pooling the constituent clusters. Tile color shows the gene-wise Z score across 11 identities (population standard deviation). Dot area shows the mean fraction of cells with detected RNA. Sampling bars use all captured cells per identity. The figure source tables give the selected genes and the 17-cluster membership. Nine state markers come from Table S2 of [Neftel et al.](https://doi.org/10.1016/j.cell.2019.06.024). The command writes `fig1c_markers.csv`, `fig1c_sampling.csv`, and `fig1c_marker_panel.pdf` alongside the paired composition results.
 
 **Atlas and expression programs.** Supply primary-cohort cell IDs with their fixed cluster, donor and specimen role. The frozen cluster annotation is in `Tables/S2/cluster_annotation_evidence.csv` in Data S1. T and NT for this step refer to the single-cell specimen role. For program discovery, supply the archived P85-supported 8,792 discovery cells with coding counts, unique gene symbols and `obs.patient_id`. The published run used cNMF 1.7.1, scanpy 1.10.2, anndata 0.11.4 and scikit-learn 1.4.2. Seurat-v3 HVG selection also requires scikit-misc. Program loadings, selected genes and metabolic target/control memberships are indexed under Table S3 in Data S1.
 
