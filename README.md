@@ -4,6 +4,8 @@ GBMZone predicts glioblastoma tissue regions from spatial transcriptomics and re
 
 The repository contains the model, input loaders, training and inference code. Supply processed spatial inputs and the model reference or checkpoint separately.
 
+[Figure 4 · weights.pt](https://github.com/ultraypy/GBMZone/releases/download/figure-4-weights/weights.pt) · [Figures 5–6 · weights.pt](https://github.com/ultraypy/GBMZone/releases/download/figure-5-6-weights/weights.pt)
+
 ## Reproduce the manuscript analyses
 
 The [analysis guide](analysis/README.md) indexes the code for Figures 1–6, the inputs from Data S1 and OMIX, and the commands for the patient-level comparisons. The Figure 4 benchmark runs with the public CSVs in this repository.
